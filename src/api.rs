@@ -31,7 +31,7 @@ impl Client {
     }
 
     #[tokio::main]
-    pub async fn forward_search(self, query: &str, filter: Option<ForwardFilter>) -> PhotonResult {
+    pub async fn forward_search(&self, query: &str, filter: Option<ForwardFilter>) -> PhotonResult {
         let mut request = self
             .reqwest_client
             .get(&self.forward_url)
@@ -48,7 +48,7 @@ impl Client {
 
     #[tokio::main]
     pub async fn reverse_search(
-        self,
+        &self,
         coords: LatLon,
         filter: Option<ReverseFilter>,
     ) -> PhotonResult {
@@ -66,7 +66,7 @@ impl Client {
         self.parse_response(response)
     }
 
-    fn parse_response(self, response: serde_json::Value) -> PhotonResult {
+    fn parse_response(&self, response: serde_json::Value) -> PhotonResult {
         let features: Vec<PhotonFeature> =
             serde_json::from_value::<PhotonFeatureCollection>(response)?
                 .features()
