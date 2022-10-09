@@ -46,6 +46,8 @@ Self-hosted instances (custom URL):
 
 Feel free to open a new issue! I am always happy to improve this package.
 
+As I am fairly new to Rust, please also don't hesitate to suggest improvements on code style and/or usability (especially regarding ownership, borrowing etc.)!
+
 ## Contribution
 
 Feel free to open pull requests and help to improve this package!
