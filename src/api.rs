@@ -8,64 +8,52 @@ use crate::data::{LatLon, PhotonFeature};
 type PhotonResult = Result<Vec<PhotonFeature>, Box<dyn Error>>;
 
 pub struct Client {
-    base_url: String,
+    forward_url: String,
+    reverse_url: String,
     reqwest_client: ReqwestClient,
 }
 
 impl Default for Client {
     fn default() -> Self {
-        Client {
-            base_url: String::from("https://photon.komoot.io"),
-            reqwest_client: ReqwestClient::new(),
-        }
+        Client::new(&"https://photon.komoot.io")
     }
 }
 
 impl Client {
-    pub fn new(base_url: Option<&str>) -> Self {
-        let req_client = ReqwestClient::new();
-        if let Some(base_url) = base_url {
-            // TODO remove trailing slash (/)
-            return Client {
-                base_url: String::from(base_url),
-                reqwest_client: req_client,
-            };
-        } else {
-            Self::default()
+    pub fn new(base_url: &str) -> Self {
+        // TODO remove trailing slash (/)
+        Client {
+            forward_url: String::from(base_url) + "/api",
+            reverse_url: String::from(base_url) + "/reverse",
+            reqwest_client: ReqwestClient::new(),
         }
     }
 
     #[tokio::main]
     pub async fn forward_search(self, query: &str) -> PhotonResult {
-        let url = self.base_url + "/api";
-
         let request = self
             .reqwest_client
-            .get(url)
+            .get(&self.forward_url)
             .query(&[("q", query)]);
 
         let response = request.send().await?.json::<serde_json::Value>().await?;
 
-        let features: Vec<PhotonFeature> =
-            serde_json::from_value::<PhotonFeatureCollection>(response)?
-                .features()
-                .into_iter()
-                .map(PhotonFeature::from)
-                .collect();
-
-        Ok(features)
+        self.parse_response(response)
     }
 
     #[tokio::main]
     pub async fn reverse_search(self, coords: LatLon) -> PhotonResult {
-        let url = self.base_url + "/reverse";
         let request = self
             .reqwest_client
-            .get(url)
+            .get(&self.reverse_url)
             .query(&[("lon", coords.lon), ("lat", coords.lat)]);
 
         let response = request.send().await?.json::<serde_json::Value>().await?;
 
+        self.parse_response(response)
+    }
+
+    fn parse_response(self, response: serde_json::Value) -> PhotonResult {
         let features: Vec<PhotonFeature> =
             serde_json::from_value::<PhotonFeatureCollection>(response)?
                 .features()
