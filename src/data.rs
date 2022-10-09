@@ -1,3 +1,4 @@
+pub mod filter;
 pub mod json;
 
 use self::json::PhotonFeatureRaw;
@@ -9,6 +10,10 @@ pub struct LatLon {
 }
 
 impl LatLon {
+    pub fn new(lat: f64, lon: f64) -> Self {
+        LatLon { lat: lat, lon: lon }
+    }
+
     fn from_vec(vec: &[f64]) -> Self {
         assert!(vec.len() >= 2);
         LatLon {
@@ -101,6 +106,3 @@ impl From<PhotonFeatureRaw> for PhotonFeature {
         }
     }
 }
-
-#[derive(Debug)]
-pub struct PhotonApiRequest {}
