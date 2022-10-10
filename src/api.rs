@@ -1,10 +1,12 @@
 use std::error::Error;
 
 use reqwest::{Client as ReqwestClient, RequestBuilder};
+use serde::Deserialize;
 
 use crate::data::filter::{ForwardFilter, ReverseFilter};
 use crate::data::json::PhotonFeatureCollection;
 use crate::data::{LatLon, PhotonFeature};
+use crate::error::PhotonError;
 
 type PhotonResult = Result<Vec<PhotonFeature>, Box<dyn Error>>;
 
@@ -67,14 +69,28 @@ impl Client {
     }
 
     fn parse_response(&self, response: serde_json::Value) -> PhotonResult {
-        let features: Vec<PhotonFeature> =
-            serde_json::from_value::<PhotonFeatureCollection>(response)?
-                .features()
-                .into_iter()
-                .map(PhotonFeature::from)
-                .collect();
+        let deserialize_result = PhotonFeatureCollection::deserialize(&response);
+        match deserialize_result {
+            Ok(features) => {
+                return Ok(features
+                    .features()
+                    .into_iter()
+                    .map(PhotonFeature::from)
+                    .collect());
+            }
+            Err(error) => {
+                let message = self.try_parse_error(response);
+                match message {
+                    Some(error) => Err(Box::new(error)),
+                    None => Err(Box::new(error)),
+                }
+            }
+        }
+    }
 
-        Ok(features)
+    fn try_parse_error(&self, response: serde_json::Value) -> Option<PhotonError> {
+        let message = response.get("message")?.to_string();
+        Some(PhotonError::new(&message))
     }
 }
 
