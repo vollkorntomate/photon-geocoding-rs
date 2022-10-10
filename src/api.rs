@@ -103,7 +103,7 @@ impl RequestAppend for ForwardFilter {
         }
         if let Some(layers) = self.layer {
             for layer in layers {
-                request = request.query(&[("layer", layer)]);
+                request = request.query(&[("layer", layer.to_string())]);
             }
         }
         if let Some(query) = self.additional_query {
@@ -127,7 +127,7 @@ impl RequestAppend for ReverseFilter {
         }
         if let Some(layers) = self.layer {
             for layer in layers {
-                request = request.query(&[("layer", layer)]);
+                request = request.query(&[("layer", layer.to_string())]);
             }
         }
         if let Some(query) = self.additional_query {

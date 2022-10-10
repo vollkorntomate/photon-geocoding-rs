@@ -1,11 +1,39 @@
+use std::fmt;
+
 use crate::{BoundingBox, LatLon};
+
+pub enum Layer {
+    House,
+    Street,
+    Locality,
+    District,
+    City,
+    County,
+    State,
+    Country,
+}
+
+impl fmt::Display for Layer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::House => write!(f, "house"),
+            Self::Street => write!(f, "street"),
+            Self::Locality => write!(f, "locality"),
+            Self::District => write!(f, "district"),
+            Self::City => write!(f, "city"),
+            Self::County => write!(f, "county"),
+            Self::State => write!(f, "state"),
+            Self::Country => write!(f, "country")
+        }
+    }
+}
 
 pub struct ForwardFilter {
     pub location_bias: Option<LatLon>,
     pub bounding_box: Option<BoundingBox>,
     pub limit: Option<u64>,
     pub lang: Option<String>,
-    pub layer: Option<Vec<String>>,
+    pub layer: Option<Vec<Layer>>,
     pub additional_query: Option<Vec<(String, String)>>,
 }
 
@@ -42,12 +70,12 @@ impl ForwardFilter {
         self
     }
 
-    pub fn language(mut self, lang: String) -> Self {
-        self.lang = Some(lang);
+    pub fn language(mut self, lang: &str) -> Self {
+        self.lang = Some(String::from(lang.to_lowercase()));
         self
     }
 
-    pub fn layer(mut self, layer: Vec<String>) -> Self {
+    pub fn layer(mut self, layer: Vec<Layer>) -> Self {
         self.layer = Some(layer);
         self
     }
@@ -62,7 +90,7 @@ pub struct ReverseFilter {
     pub radius: Option<u64>,
     pub limit: Option<u64>,
     pub lang: Option<String>,
-    pub layer: Option<Vec<String>>,
+    pub layer: Option<Vec<Layer>>,
     pub additional_query: Option<Vec<(String, String)>>,
 }
 
@@ -93,12 +121,12 @@ impl ReverseFilter {
         self
     }
 
-    pub fn language(mut self, lang: String) -> Self {
-        self.lang = Some(lang);
+    pub fn language(mut self, lang: &str) -> Self {
+        self.lang = Some(String::from(lang.to_lowercase()));
         self
     }
 
-    pub fn layer(mut self, layer: Vec<String>) -> Self {
+    pub fn layer(mut self, layer: Vec<Layer>) -> Self {
         self.layer = Some(layer);
         self
     }
