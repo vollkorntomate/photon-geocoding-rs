@@ -91,7 +91,7 @@ impl From<PhotonFeatureRaw> for PhotonFeature {
             osm_key: raw.properties.osm_key,
             osm_type: OsmType::from(raw.properties.osm_type),
             osm_value: raw.properties.osm_value,
-            r#type: raw.r#type,
+            r#type: raw.properties.r#type, // raw.r#type always equals "Feature", so property's type is more interesting
             extent: raw.properties.extent.map(BoundingBox::from),
             name: raw.properties.name,
             country: raw.properties.country,
