@@ -6,7 +6,6 @@ description = "An API client for Komoot's Photon API written in and for Rust."
 repository = "https://codeberg.org/vollkorntomate/photon-geocoding-rs"
 readme = "README.md"
 license = "Apache-2.0"
-license-file = "LICENSE"
 keywords = ["geocoding", "osm"]
 edition = "2021"
 rust-version = "1.64"
