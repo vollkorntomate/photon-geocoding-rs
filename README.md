@@ -1,8 +1,8 @@
 # photon-geocoding-rs
 
-[![version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://codeberg.org/vollkorntomate/photon-geocoding-rs)
+[![version](https://img.shields.io/badge/version-1.0.1-green.svg)](https://codeberg.org/vollkorntomate/photon-geocoding-rs)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![crates.io](https://img.shields.io/badge/crates.io-v1.0.0-orange.svg?logo=rust)](https://crates.io)
+[![crates.io](https://img.shields.io/badge/crates.io-v1.0.1-orange.svg?logo=rust)](https://crates.io/crates/photon-geocoding)
 
 An API client for Komoot's Photon API written in and for Rust.
 
