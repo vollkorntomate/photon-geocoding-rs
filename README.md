@@ -2,19 +2,19 @@
 
 [![version](https://img.shields.io/badge/version-0.1.0-green.svg)](https://codeberg.org/vollkorntomate/photon-geocoding-rs)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![crates.io](https://img.shields.io/badge/crates.io-v0.1.0-orange.svg)](https://crates.io)
+[![crates.io](https://img.shields.io/badge/crates.io-v0.1.0-orange.svg?logo=rust)](https://crates.io)
+
+An API client for Komoot's Photon API written in and for Rust.
+
+It supports forward and reverse geocoding as well as search-as-you-type.
+
+---
 
 <a href="https://codeberg.org/vollkorntomate/photon-geocoding-rs">
     <img alt="Get it on Codeberg" src="https://get-it-on.codeberg.org/get-it-on-blue-on-white.png" height="60">
 </a>
 
-The main repository is hosted on [codeberg.org](https://codeberg.org/vollkorntomate/photon-geocoding-rs). Issues and Pull Requests are preferred there, but can still be raised on GitHub.
-
----
-
-An API client for Komoot's Photon API written in and for Rust.
-
-It supports forward and reverse geocoding as well as search-as-you-type.
+The main repository is hosted on [codeberg.org](https://codeberg.org/vollkorntomate/photon-geocoding-rs). Issues and Pull Requests are preferred there, but you can still open one on GitHub.
 
 ---
 
@@ -32,14 +32,46 @@ and licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICE
 
 Forward geocoding:
 ```rust
+use photon_geocoding::{PhotonApiClient, PhotonFeature};
+
+let api: PhotonApiClient = PhotonApiClient::default();
+let result: Vec<PhotonFeature> = api.forward_search("munich", None).unwrap();
 ```
 
 Reverse geocoding:
 ```rust
+use photon_geocoding::{PhotonApiClient, PhotonFeature};
+
+let api: PhotonApiClient = PhotonApiClient::default();
+let result: Vec<PhotonFeature> = api.reverse_search(LatLon::new(48.123, 11.321), None).unwrap();
 ```
 
 Self-hosted instances (custom URL):
 ```rust
+use photon_geocoding::PhotonApiClient;
+
+let api: PhotonApiClient = PhotonApiClient::new("https://example.com");
+// requests will now go to https://example.com/api and https://example.com/reverse
+```
+
+Filters:
+```rust
+use photon_geocoding::filter::{ForwardFilter, PhotonLayer};
+use photon_geocoding::{BoundingBox, LatLon, PhotonApiClient};
+
+let api: PhotonApiClient = PhotonApiClient::default();
+let filter = ForwardFilter::new()
+    .language("FR")
+    .bounding_box(BoundingBox {
+        south_west: LatLon::new(40.0, 10.0),
+        north_east: LatLon::new(50.0, 15.0),
+    })
+    .layer(vec![PhotonLayer::City, PhotonLayer::State])
+    .additional_query(vec![("osm_tag", "!key:value")]);
+
+let results = api.forward_search("munich", Some(filter)).unwrap();
+
+// resulting query string: "q=munich&bbox=10%2C40%2C15%2C50&lang=fr&layer=city&layer=state&osm_tag=%21key%3Avalue"
 ```
 
 ## Features and Bugs
