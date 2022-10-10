@@ -1,8 +1,8 @@
 # photon-geocoding-rs
 
-[![version](https://img.shields.io/badge/version-0.1.0-green.svg)](https://codeberg.org/vollkorntomate/photon-geocoding-rs)
+[![version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://codeberg.org/vollkorntomate/photon-geocoding-rs)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![crates.io](https://img.shields.io/badge/crates.io-v0.1.0-orange.svg?logo=rust)](https://crates.io)
+[![crates.io](https://img.shields.io/badge/crates.io-v1.0.0-orange.svg?logo=rust)](https://crates.io)
 
 An API client for Komoot's Photon API written in and for Rust.
 
@@ -29,6 +29,12 @@ and licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICE
 **Important:** Please be aware of the Terms and Use of Photon! It is free to use, so please be fair and avoid excessive requests!
 
 ## Usage
+
+In your `cargo.toml`, include this:
+```toml
+[dependencies]
+photon-geocoding = { version = "1.0" }
+```
 
 Forward geocoding:
 ```rust
