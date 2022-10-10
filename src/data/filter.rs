@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::{BoundingBox, LatLon};
 
-pub enum Layer {
+pub enum PhotonLayer {
     House,
     Street,
     Locality,
@@ -13,7 +13,7 @@ pub enum Layer {
     Country,
 }
 
-impl fmt::Display for Layer {
+impl fmt::Display for PhotonLayer {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::House => write!(f, "house"),
@@ -23,7 +23,7 @@ impl fmt::Display for Layer {
             Self::City => write!(f, "city"),
             Self::County => write!(f, "county"),
             Self::State => write!(f, "state"),
-            Self::Country => write!(f, "country")
+            Self::Country => write!(f, "country"),
         }
     }
 }
@@ -33,7 +33,7 @@ pub struct ForwardFilter {
     pub bounding_box: Option<BoundingBox>,
     pub limit: Option<u64>,
     pub lang: Option<String>,
-    pub layer: Option<Vec<Layer>>,
+    pub layer: Option<Vec<PhotonLayer>>,
     pub additional_query: Option<Vec<(String, String)>>,
 }
 
@@ -75,13 +75,18 @@ impl ForwardFilter {
         self
     }
 
-    pub fn layer(mut self, layer: Vec<Layer>) -> Self {
+    pub fn layer(mut self, layer: Vec<PhotonLayer>) -> Self {
         self.layer = Some(layer);
         self
     }
 
-    pub fn additional_query(mut self, query: Vec<(String, String)>) -> Self {
-        self.additional_query = Some(query);
+    pub fn additional_query(mut self, query: Vec<(&str, &str)>) -> Self {
+        self.additional_query = Some(
+            query
+                .iter()
+                .map(|(s, t)| (s.to_string(), t.to_string()))
+                .collect(),
+        );
         self
     }
 }
@@ -90,7 +95,7 @@ pub struct ReverseFilter {
     pub radius: Option<u64>,
     pub limit: Option<u64>,
     pub lang: Option<String>,
-    pub layer: Option<Vec<Layer>>,
+    pub layer: Option<Vec<PhotonLayer>>,
     pub additional_query: Option<Vec<(String, String)>>,
 }
 
@@ -126,13 +131,18 @@ impl ReverseFilter {
         self
     }
 
-    pub fn layer(mut self, layer: Vec<Layer>) -> Self {
+    pub fn layer(mut self, layer: Vec<PhotonLayer>) -> Self {
         self.layer = Some(layer);
         self
     }
 
-    pub fn additional_query(mut self, query: Vec<(String, String)>) -> Self {
-        self.additional_query = Some(query);
+    pub fn additional_query(mut self, query: Vec<(&str, &str)>) -> Self {
+        self.additional_query = Some(
+            query
+                .iter()
+                .map(|(s, t)| (s.to_string(), t.to_string()))
+                .collect(),
+        );
         self
     }
 }

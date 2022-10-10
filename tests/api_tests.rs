@@ -1,5 +1,5 @@
 mod forward_search {
-    use photon_geocoding::filter::{ForwardFilter, Layer};
+    use photon_geocoding::filter::{ForwardFilter, PhotonLayer};
     use photon_geocoding::{BoundingBox, LatLon, PhotonApiClient};
 
     #[test]
@@ -98,7 +98,7 @@ mod forward_search {
     fn uses_layers() {
         let api = PhotonApiClient::default();
 
-        let filter = ForwardFilter::new().layer(vec![Layer::State]);
+        let filter = ForwardFilter::new().layer(vec![PhotonLayer::State]);
 
         let results_without_filter = api.forward_search("bayern", None).unwrap();
         let results_with_filter = api.forward_search("bayern", Some(filter)).unwrap();
@@ -113,7 +113,7 @@ mod forward_search {
 }
 
 mod reverse_search {
-    use photon_geocoding::filter::{Layer, ReverseFilter};
+    use photon_geocoding::filter::{PhotonLayer, ReverseFilter};
     use photon_geocoding::{LatLon, PhotonApiClient};
 
     #[test]
@@ -164,7 +164,7 @@ mod reverse_search {
     fn uses_layers() {
         let api = PhotonApiClient::default();
 
-        let filter = ReverseFilter::new().layer(vec![Layer::City]);
+        let filter = ReverseFilter::new().layer(vec![PhotonLayer::City]);
 
         let results_without_filter = api
             .reverse_search(LatLon::new(48.1379, 11.5734), None)
