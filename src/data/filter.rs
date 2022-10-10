@@ -32,6 +32,8 @@ impl fmt::Display for PhotonLayer {
 /// can be easily constructed.
 pub struct ForwardFilter {
     pub location_bias: Option<LatLon>,
+    pub location_bias_zoom: Option<u64>,
+    pub location_bias_scale: Option<f64>,
     pub bounding_box: Option<BoundingBox>,
     pub limit: Option<u64>,
     pub lang: Option<String>,
@@ -43,6 +45,8 @@ impl Default for ForwardFilter {
     fn default() -> Self {
         ForwardFilter {
             location_bias: None,
+            location_bias_zoom: None,
+            location_bias_scale: None,
             bounding_box: None,
             limit: None,
             lang: None,
@@ -59,8 +63,14 @@ impl ForwardFilter {
     }
 
     /// Concentrate the search around a specific coordinate.
-    pub fn location_bias(mut self, coords: LatLon) -> Self {
+    ///
+    /// `zoom` describes the radius around the coordinate to focus on.
+    /// `scale` describes how much the prominence of a result should still be taken into account.
+    /// See [Photon documentation](https://github.com/komoot/photon#search-with-location-bias) for details
+    pub fn location_bias(mut self, coords: LatLon, zoom: Option<u64>, scale: Option<f64>) -> Self {
         self.location_bias = Some(coords);
+        self.location_bias_zoom = zoom;
+        self.location_bias_scale = scale;
         self
     }
 

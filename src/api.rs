@@ -132,6 +132,13 @@ impl RequestAppend for ForwardFilter {
         let mut request = request;
         if let Some(bias) = self.location_bias {
             request = request.query(&[("lat", bias.lat), ("lon", bias.lon)]);
+
+            if let Some(zoom) = self.location_bias_zoom {
+                request = request.query(&[("zoom", zoom)]);
+            }
+            if let Some(scale) = self.location_bias_scale {
+                request = request.query(&[("location_bias_scale", scale)]);
+            }
         }
         if let Some(bbox) = self.bounding_box {
             let format = format!(

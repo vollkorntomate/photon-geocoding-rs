@@ -35,7 +35,7 @@ mod forward_search {
     #[test]
     fn respects_location_bias() {
         let api = PhotonApiClient::default();
-        let filter = ForwardFilter::new().location_bias(LatLon::new(48.6701, -98.8485));
+        let filter = ForwardFilter::new().location_bias(LatLon::new(48.6701, -98.8485), None, None);
         let results = api.forward_search("munich", Some(filter)).unwrap();
 
         assert!(!results.is_empty());
