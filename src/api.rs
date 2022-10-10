@@ -17,12 +17,16 @@ pub struct Client {
 }
 
 impl Default for Client {
+    /// Default Photon client, using https://photon.komoot.io for requests.
     fn default() -> Self {
         Client::new(&"https://photon.komoot.io")
     }
 }
 
 impl Client {
+    /// Creates a new API client with the specified `base_url`.
+    /// 
+    /// `base_url` must begin with `http://` or `https://`.
     pub fn new(base_url: &str) -> Self {
         let mut base_url = base_url;
         if base_url.ends_with("/") {
@@ -35,6 +39,11 @@ impl Client {
         }
     }
 
+    /// Performs a forward search for the provided `query`.
+    /// 
+    /// Results can be filtered by the optional `filter`. Pass `None` for no filter.
+    /// 
+    /// The request is performed asynchronously.
     #[tokio::main]
     pub async fn forward_search(&self, query: &str, filter: Option<ForwardFilter>) -> PhotonResult {
         let mut request = self
@@ -51,6 +60,11 @@ impl Client {
         self.parse_response(response)
     }
 
+    /// Performs a reverse search for objects at the specified `coords`.
+    /// 
+    /// Results can be filtered by the optional `filter`. Pass `None` for no filter.
+    /// 
+    /// The request is performed asynchronously.
     #[tokio::main]
     pub async fn reverse_search(
         &self,

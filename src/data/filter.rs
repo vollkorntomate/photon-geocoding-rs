@@ -28,6 +28,8 @@ impl fmt::Display for PhotonLayer {
     }
 }
 
+/// Filtering options for forward searches. This struct implements a builder pattern, so filters
+/// can be easily constructed.
 pub struct ForwardFilter {
     pub location_bias: Option<LatLon>,
     pub bounding_box: Option<BoundingBox>,
@@ -51,35 +53,43 @@ impl Default for ForwardFilter {
 }
 
 impl ForwardFilter {
+    /// Construct a new `ForwardFilter`. All fields are set to `None` in the beginning.
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Concentrate the search around a specific coordinate.
     pub fn location_bias(mut self, coords: LatLon) -> Self {
         self.location_bias = Some(coords);
         self
     }
 
+    /// Concentrate the search in a specific rectangular area.
     pub fn bounding_box(mut self, bbox: BoundingBox) -> Self {
         self.bounding_box = Some(bbox);
         self
     }
 
+    /// Limit the number of search results.
     pub fn limit(mut self, limit: u64) -> Self {
         self.limit = Some(limit);
         self
     }
 
+    /// Return results in a specific language. Photon currently supports `DE`, `EN` and `FR`.
+    /// Defaults to the local language of a search result.
     pub fn language(mut self, lang: &str) -> Self {
         self.lang = Some(String::from(lang.to_lowercase()));
         self
     }
 
+    /// Filter results by layer. See [Photon documentation](https://github.com/komoot/photon#filter-results-by-layer)
     pub fn layer(mut self, layer: Vec<PhotonLayer>) -> Self {
         self.layer = Some(layer);
         self
     }
 
+    /// Add additional query strings to the request. Example: [Filtering by tags and values](https://github.com/komoot/photon#filter-results-by-tags-and-values)
     pub fn additional_query(mut self, query: Vec<(&str, &str)>) -> Self {
         self.additional_query = Some(
             query
@@ -91,6 +101,8 @@ impl ForwardFilter {
     }
 }
 
+/// Filtering options for reverse searches. This struct implements a builder pattern, so filters
+/// can be easily constructed.
 pub struct ReverseFilter {
     pub radius: Option<u64>,
     pub limit: Option<u64>,
@@ -112,6 +124,7 @@ impl Default for ReverseFilter {
 }
 
 impl ReverseFilter {
+    /// Construct a new `ReverseFilter`. All fields are set to `None` in the beginning.
     pub fn new() -> Self {
         Self::default()
     }
@@ -121,21 +134,26 @@ impl ReverseFilter {
         self
     }
 
+    /// Limit the number of search results.
     pub fn limit(mut self, limit: u64) -> Self {
         self.limit = Some(limit);
         self
     }
 
+    /// Return results in a specific language. Photon currently supports `DE`, `EN` and `FR`.
+    /// Defaults to the local language of a search result.
     pub fn language(mut self, lang: &str) -> Self {
         self.lang = Some(String::from(lang.to_lowercase()));
         self
     }
 
+    /// Filter results by layer. See [Photon documentation](https://github.com/komoot/photon#filter-results-by-layer)
     pub fn layer(mut self, layer: Vec<PhotonLayer>) -> Self {
         self.layer = Some(layer);
         self
     }
 
+    /// Add additional query strings to the request. Example: [Filtering by tags and values](https://github.com/komoot/photon#filter-results-by-tags-and-values)
     pub fn additional_query(mut self, query: Vec<(&str, &str)>) -> Self {
         self.additional_query = Some(
             query

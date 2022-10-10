@@ -11,7 +11,7 @@ pub struct LatLon {
 
 impl LatLon {
     pub fn new(lat: f64, lon: f64) -> Self {
-        LatLon { lat: lat, lon: lon }
+        LatLon { lat, lon }
     }
 
     fn from_vec(vec: &[f64]) -> Self {
@@ -33,14 +33,17 @@ pub enum OsmType {
 impl From<String> for OsmType {
     fn from(str: String) -> Self {
         match str.as_str() {
-            "R" => Self::Relation,
-            "W" => Self::Way,
-            "N" => Self::Node,
+            "R" | "r" => Self::Relation,
+            "W" | "w" => Self::Way,
+            "N" | "n" => Self::Node,
             _ => panic!("Unexpected OSM Type"),
         }
     }
 }
 
+/// A bounding box, described by two corner coordinates: south_west (min) and north_east (max).
+/// Semantically, south_west's coordinates are always smaller than north_east's, though this
+/// constraint is not enforced.
 #[derive(Debug)]
 pub struct BoundingBox {
     pub south_west: LatLon,
