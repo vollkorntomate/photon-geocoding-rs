@@ -24,7 +24,10 @@ impl Default for Client {
 
 impl Client {
     pub fn new(base_url: &str) -> Self {
-        // TODO remove trailing slash (/)
+        let mut base_url = base_url;
+        if base_url.ends_with("/") {
+            base_url = &base_url[..base_url.len() - 1]
+        }
         Client {
             forward_url: String::from(base_url) + "/api",
             reverse_url: String::from(base_url) + "/reverse",
@@ -92,6 +95,18 @@ impl Client {
         let message = response.get("message")?.to_string();
         Some(PhotonError::new(&message))
     }
+}
+
+#[test]
+fn test_base_url_trailing_slash() {
+    let base_url_with_trailing_slash = "https://example.com/";
+    let base_url_without_trailing_slash = "https://example.com";
+
+    let client_with = Client::new(base_url_with_trailing_slash);
+    let client_without = Client::new(base_url_without_trailing_slash);
+
+    assert_eq!(client_with.forward_url, client_without.forward_url);
+    assert_eq!(client_with.reverse_url, client_without.reverse_url);
 }
 
 pub trait RequestAppend {
