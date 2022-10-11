@@ -1,7 +1,7 @@
 use std::error::Error;
 
-use reqwest::{Client as ReqwestClient, RequestBuilder};
 use serde::Deserialize;
+use ureq::{Agent, AgentBuilder, Request};
 
 use crate::data::filter::{ForwardFilter, ReverseFilter};
 use crate::data::json::PhotonFeatureCollection;
@@ -13,7 +13,7 @@ type PhotonResult = Result<Vec<PhotonFeature>, Box<dyn Error>>;
 pub struct Client {
     forward_url: String,
     reverse_url: String,
-    reqwest_client: ReqwestClient,
+    client: Agent,
 }
 
 impl Default for Client {
@@ -35,7 +35,7 @@ impl Client {
         Client {
             forward_url: String::from(base_url) + "/api",
             reverse_url: String::from(base_url) + "/reverse",
-            reqwest_client: ReqwestClient::new(),
+            client: AgentBuilder::new().build(),
         }
     }
 
@@ -43,19 +43,16 @@ impl Client {
     /// 
     /// Results can be filtered by the optional `filter`. Pass `None` for no filter.
     /// 
-    /// The request is performed asynchronously.
-    #[tokio::main]
-    pub async fn forward_search(&self, query: &str, filter: Option<ForwardFilter>) -> PhotonResult {
-        let mut request = self
-            .reqwest_client
-            .get(&self.forward_url)
-            .query(&[("q", query)]);
+    /// This function is blocking, so no async features are involved here. It is, however, safe to
+    /// call this function in parallel, since the entire API client is thread-safe.
+    pub fn forward_search(&self, query: &str, filter: Option<ForwardFilter>) -> PhotonResult {
+        let mut request = self.client.get(&self.forward_url).query("q", query);
 
         if let Some(filter) = filter {
             request = filter.append_to(request);
         }
 
-        let response = request.send().await?.json::<serde_json::Value>().await?;
+        let response = request.call()?.into_json()?;
 
         self.parse_response(response)
     }
@@ -64,23 +61,24 @@ impl Client {
     /// 
     /// Results can be filtered by the optional `filter`. Pass `None` for no filter.
     /// 
-    /// The request is performed asynchronously.
-    #[tokio::main]
-    pub async fn reverse_search(
+    /// This function is blocking, so no async features are involved here. It is, however, safe to
+    /// call this function in parallel, since the entire API client is thread-safe.
+    pub fn reverse_search(
         &self,
         coords: LatLon,
         filter: Option<ReverseFilter>,
     ) -> PhotonResult {
         let mut request = self
-            .reqwest_client
+            .client
             .get(&self.reverse_url)
-            .query(&[("lon", coords.lon), ("lat", coords.lat)]);
+            .query("lon", &coords.lon.to_string())
+            .query("lat", &coords.lat.to_string());
 
         if let Some(filter) = filter {
             request = filter.append_to(request)
         }
 
-        let response = request.send().await?.json::<serde_json::Value>().await?;
+        let response = request.call()?.into_json()?;
 
         self.parse_response(response)
     }
@@ -124,20 +122,22 @@ fn test_base_url_trailing_slash() {
 }
 
 pub trait RequestAppend {
-    fn append_to(self, request: RequestBuilder) -> RequestBuilder;
+    fn append_to(self, request: Request) -> Request;
 }
 
 impl RequestAppend for ForwardFilter {
-    fn append_to(self, request: RequestBuilder) -> RequestBuilder {
+    fn append_to(self, request: Request) -> Request {
         let mut request = request;
         if let Some(bias) = self.location_bias {
-            request = request.query(&[("lat", bias.lat), ("lon", bias.lon)]);
+            request = request
+                .query("lat", &bias.lat.to_string())
+                .query("lon", &bias.lon.to_string());
 
             if let Some(zoom) = self.location_bias_zoom {
-                request = request.query(&[("zoom", zoom)]);
+                request = request.query("zoom", &zoom.to_string());
             }
             if let Some(scale) = self.location_bias_scale {
-                request = request.query(&[("location_bias_scale", scale)]);
+                request = request.query("location_bias_scale", &scale.to_string());
             }
         }
         if let Some(bbox) = self.bounding_box {
@@ -145,45 +145,49 @@ impl RequestAppend for ForwardFilter {
                 "{},{},{},{}",
                 bbox.south_west.lon, bbox.south_west.lat, bbox.north_east.lon, bbox.north_east.lat
             );
-            request = request.query(&[("bbox", format)]);
+            request = request.query("bbox", &format);
         }
         if let Some(limit) = self.limit {
-            request = request.query(&[("limit", limit)]);
+            request = request.query("limit", &limit.to_string());
         }
         if let Some(lang) = self.lang {
-            request = request.query(&[("lang", lang)]);
+            request = request.query("lang", &lang);
         }
         if let Some(layers) = self.layer {
             for layer in layers {
-                request = request.query(&[("layer", layer.to_string())]);
+                request = request.query("layer", &layer.to_string());
             }
         }
         if let Some(query) = self.additional_query {
-            request = request.query(&query);
+            for (param, value) in query {
+                request = request.query(&param, &value);
+            }
         }
         request
     }
 }
 
 impl RequestAppend for ReverseFilter {
-    fn append_to(self, request: RequestBuilder) -> RequestBuilder {
+    fn append_to(self, request: Request) -> Request {
         let mut request = request;
         if let Some(radius) = self.radius {
-            request = request.query(&[("radius", radius)]);
+            request = request.query("radius", &radius.to_string());
         }
         if let Some(limit) = self.limit {
-            request = request.query(&[("limit", limit)]);
+            request = request.query("limit", &limit.to_string());
         }
         if let Some(lang) = self.lang {
-            request = request.query(&[("lang", lang)]);
+            request = request.query("lang", &lang);
         }
         if let Some(layers) = self.layer {
             for layer in layers {
-                request = request.query(&[("layer", layer.to_string())]);
+                request = request.query("layer", &layer.to_string());
             }
         }
         if let Some(query) = self.additional_query {
-            request = request.query(&query);
+            for (param, value) in query {
+                request = request.query(&param, &value);
+            }
         }
         request
     }
