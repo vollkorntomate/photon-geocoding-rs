@@ -1,6 +1,6 @@
 [package]
 name = "photon-geocoding"
-version = "1.0.1"
+version = "1.1.0"
 authors = ["vollkorntomate <thomas@vollkorntomate.de>"]
 description = "An API client for Komoot's Photon API written in and for Rust."
 repository = "https://codeberg.org/vollkorntomate/photon-geocoding-rs"

@@ -1,8 +1,8 @@
 # photon-geocoding-rs
 
-[![version](https://img.shields.io/badge/version-1.0.1-green.svg)](https://codeberg.org/vollkorntomate/photon-geocoding-rs)
+[![version](https://img.shields.io/badge/version-1.1.0-green.svg)](https://codeberg.org/vollkorntomate/photon-geocoding-rs)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![crates.io](https://img.shields.io/badge/crates.io-v1.0.1-orange.svg?logo=rust)](https://crates.io/crates/photon-geocoding)
+[![crates.io](https://img.shields.io/badge/crates.io-v1.1.0-orange.svg?logo=rust)](https://crates.io/crates/photon-geocoding)
 
 An API client for Komoot's Photon API written in and for Rust.
 
@@ -33,7 +33,7 @@ and licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICE
 In your `cargo.toml`, include this:
 ```toml
 [dependencies]
-photon-geocoding = { version = "1.0" }
+photon-geocoding = { version = "1.1.0" }
 ```
 
 Forward geocoding:
@@ -79,6 +79,8 @@ let results = api.forward_search("munich", Some(filter)).unwrap();
 
 // resulting query string: "q=munich&bbox=10%2C40%2C15%2C50&lang=fr&layer=city&layer=state&osm_tag=%21key%3Avalue"
 ```
+
+All requests are performed in blocking mode, so no async behavior is involved. However, the `PhotonApiClient` is thread-safe, so you can safely choose to do multiple requests in parallel using the same instance.
 
 ## Features and Bugs
 
