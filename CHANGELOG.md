@@ -1,3 +1,6 @@
+# 1.1.1 (2023-08-18)
+- Updated dependencies
+
 # 1.1.0 (2022-10-11)
 - Switched from `reqwest` to `ureq` as the HTTP client library
   - This results in fewer dependencies and thus shorter builds
